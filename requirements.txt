@@ -1,0 +1,6 @@
+clarifai==2.0.20
+configparser==3.5.0
+future==0.15.2
+jsonschema==2.5.1
+Pillow==2.9.0
+requests==2.13.0
