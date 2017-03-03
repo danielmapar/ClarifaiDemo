@@ -2,27 +2,21 @@
 from tkinter import *
 from tkinter.filedialog import askopenfilename
 from tkinter import messagebox
-from clarifai import rest
-from clarifai.rest import ClarifaiApp
 from clarifai.client import ClarifaiApi
 
 class Clarifi:
 
 	def client(self, app_id, app_secret):
 
-		app = ClarifaiApp(app_id, app_secret)
-
-		# get the general model
-		return app.models.get("general-v1.3")
+		return ClarifaiApi(app_id, app_secret)
 
 	def run_using_link(self, app_id, app_secret, link):
 
-		return self.client(app_id, app_secret).predict_by_url(url=link);
+		return self.client(app_id, app_secret).tag_urls(link);
 
 	def run_using_file(self, app_id, app_secret, file_path):
 
-		api = ClarifaiApi(app_id, app_secret)
-		return api.tag([open(file_path, "r")])
+		return self.client(app_id, app_secret).tag_image_base64(open(file_path))
 
 
 class Interface(Frame):
@@ -118,16 +112,15 @@ class Interface(Frame):
 
 			if not api_id and not app_secret:
 				messagebox.showinfo("Warning", "Fill up both APP ID and APP SECRET fields")
-				return 
+				return
 
 			if not file_link and not file_path:
 				messagebox.showinfo("Warning", "Provide a file link, or select a file from your computer")
-				return 
+				return
 
-			if file_link:
+			if len(file_link) > 0:
 				res = self.clarifi.run_using_link(api_id, app_secret, file_link)
-
-			if file_path:
+			elif len(file_path) > 0:
 				res = self.clarifi.run_using_file(api_id, app_secret, file_path)
 
 			print(res)
