@@ -3,6 +3,7 @@ from tkinter import *
 from tkinter.filedialog import askopenfilename
 from tkinter import messagebox
 from clarifai.client import ClarifaiApi
+import json
 
 class Clarifi:
 
@@ -118,12 +119,21 @@ class Interface(Frame):
 				messagebox.showinfo("Warning", "Provide a file link, or select a file from your computer")
 				return
 
+			dict_data = ""
 			if len(file_link) > 0:
-				res = self.clarifi.run_using_link(api_id, app_secret, file_link)
+				dict_data = self.clarifi.run_using_link(api_id, app_secret, file_link)
 			elif len(file_path) > 0:
-				res = self.clarifi.run_using_file(api_id, app_secret, file_path)
+				dict_data = self.clarifi.run_using_file(api_id, app_secret, file_path)
 
-			print(res)
+			data = json.dumps(dict_data, ensure_ascii=False, sort_keys=True, indent=4)
+
+			# Create popup with json response
+			json_view = Toplevel(height=600, width=600)
+			json_text = Text(json_view, height=600, width=600)
+			json_text.insert("end", data)
+			json_text.config(state=DISABLED)
+			json_text.pack()
+
 
 
 		Button(self, width=10, text="Run Query", command=run_query).place(x=250, y=330)
